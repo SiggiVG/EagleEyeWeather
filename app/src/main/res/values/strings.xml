@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Weather App</string>
+    <string name="app_name">Eagle Eye Weather</string>
     <string name="api_key">2499865a319393f1770ce3daa85674da</string>
 </resources>
