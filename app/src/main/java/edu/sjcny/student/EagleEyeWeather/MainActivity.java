@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.sjcny.student.EagleEyeWeather.weather.CurrentWeather;
-import edu.sjcny.student.EagleEyeWeather.weather.WeatherURLHandler;
+import edu.sjcny.student.EagleEyeWeather.url.WeatherURLHandler;
 import edu.sjcny.student.EagleEyeWeather.weather.WeeklyWeather;
 
 public class MainActivity extends AppCompatActivity {

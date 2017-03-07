@@ -1,10 +1,14 @@
-package edu.sjcny.student.EagleEyeWeather.weather;
+package edu.sjcny.student.EagleEyeWeather.url;
 
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+
+import edu.sjcny.student.EagleEyeWeather.weather.CurrentWeather;
+import edu.sjcny.student.EagleEyeWeather.weather.Weather;
+import edu.sjcny.student.EagleEyeWeather.weather.WeeklyWeather;
 
 import static edu.sjcny.student.EagleEyeWeather.MainActivity.appKey;
 
