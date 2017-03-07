@@ -10,16 +10,8 @@ import org.json.JSONException;
 
 public class WeeklyWeather extends Weather
 {
-    public WeeklyWeather(String str) throws JSONException {
-        super(str);
-        this.parseJson();
-    }
-
-    @Override
-    public Weather parseJson()
+    public WeeklyWeather()
     {
-        //TODO: parse the JSON file, putting each value within to a variable above.
 
-        return this;
     }
 }

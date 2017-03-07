@@ -9,11 +9,5 @@ import org.json.JSONObject;
 
 public abstract class Weather
 {
-    protected JSONObject json;
-
-    public Weather(String str) throws JSONException {
-        this.json = new JSONObject(str);
-    }
-
-    public abstract Weather parseJson() throws JSONException;
+    public Weather(){}
 }
