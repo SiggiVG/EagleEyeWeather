@@ -52,6 +52,9 @@ public class WeatherURLHandler implements Runnable
         }
     }
 
+    //TODO have urls formed using lat and long instead
+    // replace "?zip=" with "?lat=" + lat + "&lon=" + lon
+
     public String getWeatherAPICALL(String zip, String units)
     {
         return "http://api.openweathermap.org/data/2.5/" + "weather" + "?zip=" + zip + "&units=" + units + "&appid=" + appKey;
