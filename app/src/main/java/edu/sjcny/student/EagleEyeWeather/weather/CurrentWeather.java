@@ -6,6 +6,8 @@ import org.json.JSONException;
 
 /**
  * Created by Friedrich on 2/27/2017.
+ *
+ * TODO whatever you need to with these Daniel.
  */
 
 public class CurrentWeather extends Weather
