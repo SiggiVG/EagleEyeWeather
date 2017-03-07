@@ -37,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String appKey="2499865a319393f1770ce3daa85674da";
 
     //TODO remove these, to be replaced by the new UI, which populates from Weather Objects
-    int curTemp=45;
-    int temp1High=56;
-    int temp1Low=40;
-    int temp2High=70;
-    int temp2Low=40;
-    int temp3High=45;
-    int temp3Low=42;
+    double curTemp=45;
+    double temp1High=56;
+    double temp1Low=40;
+    double temp2High=70;
+    double temp2Low=40;
+    double temp3High=45;
+    double temp3Low=42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -98,11 +98,16 @@ public class MainActivity extends AppCompatActivity {
         CurrentWeather weather;
         try {
             weather = JSONParser.parseJSONWeather(json);
+
+            curTemp = weather.temp;
+            temp1Low = weather.tempMin;
+            temp1High = weather.tempMax;
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         //TODO Update the GUI Fields with information taken from the Weather Objects
+
 
 
 
@@ -151,10 +156,10 @@ public class MainActivity extends AppCompatActivity {
     private void populateWeatherFields()
     {
         String[] weathers = new String[] {
-                "Now: " + curTemp + "*",
-                "Today: " + temp1High + "*/" + temp1Low + "*",
-                "Tomorrow: " + temp2High + "*/" + temp2Low + "*",
-                "Thursday: " + temp3High + "*/" + temp3Low + "*" };
+                "Now: " + curTemp + "\u00B0",
+                "Today's High: " + temp1High + "\u00B0 Low: " + temp1Low + "\u00B0"};
+                //"Tomorrow: " + temp2High + "*/" + temp2Low + "*",
+                //"Thursday: " + temp3High + "*/" + temp3Low + "*" };
 
         ArrayAdapter adapter = new ArrayAdapter<String>(
                 this, R.layout.activity_listview, weathers);
