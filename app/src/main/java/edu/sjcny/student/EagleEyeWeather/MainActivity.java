@@ -28,14 +28,8 @@ public class MainActivity extends AppCompatActivity {
     //TODO: move this to values/strings.xml
     public static final String appKey="2499865a319393f1770ce3daa85674da";
 
-    //TODO remove these, to be replaced by the new UI, which populates from Weather Objects
-    double curTemp=45;
-    double temp1High=56;
-    double temp1Low=40;
-    double temp2High=70;
-    double temp2Low=40;
-    double temp3High=45;
-    double temp3Low=42;
+    public WeatherObject curWeather;
+    public WeatherObject[] weekWeather;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
             //   return TODO;
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 321);
-
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
         /**
@@ -71,33 +64,27 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
 
 
-
         //TODO Initialize the GUI and Weather Objects (Current, WeekAhead[])
 
         //TODO have the chrome(?) browser open at the touch of a button to the Weather Channel page???
 
+        //TODO maybe move Async Call to OnLocationChanged??? so that it updates in real time?
         //TODO Begin Async Call
         //TODO Use the Weather URL Handler in the Async Call to get JSON as String
         String jsonNow = "";
         String jsonAhead = "";
         try {
-            jsonNow = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener)locationListener).getLatitude(), ((MyLocationListener)locationListener).getLongitude(), "imperial"));
-            jsonAhead = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener)locationListener).getLatitude(), ((MyLocationListener)locationListener).getLongitude(), "imperial", 7));
+            jsonNow = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial"));
+            jsonAhead = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial", 7));
         } catch (Exception e) {
             e.printStackTrace();
         }
         //TODO end Async Call
 
         //TODO parse JSON using JSONObject API into Weather Objects
-        WeatherObject weather;
-        WeatherObject[] weekAhead;
         try {
-            weather = JSONParser.parseJSONNow(jsonNow);
-            weekAhead = JSONParser.parseJSONWeekAhead(jsonAhead);
-
-            curTemp = weather.getAvgTemp();
-            temp1Low = weather.getMinTemp();
-            temp1High = weather.getMaxTemp();
+            curWeather = JSONParser.parseJSONNow(jsonNow);
+            weekWeather = JSONParser.parseJSONWeekAhead(jsonAhead);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -113,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: have this change based on if you're on current weather page or weekly forecast page
         populateWeatherFields();
-
     }
 
     /**
@@ -129,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             case 123: //Fine Location
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission has been granted
+                    Log.d("PERMISSIONS", "Location permission granted");
                 }
                 else
                 {
@@ -138,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
             case 321: //Coarse Location
                 if (grantResults.length > 0 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     //permission has been granted
+                    Log.d("PERMISSIONS", "Location permission granted");
                 }
                 else
                 {
@@ -152,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
     private void populateWeatherFields()
     {
         String[] weathers = new String[] {
-                "Now: " + curTemp + "\u00B0",
-                "Today's High: " + temp1High + "\u00B0 Low: " + temp1Low + "\u00B0"};
+                "Now: " + curWeather.getAvgTemp() + "\u00B0",
+                "Today's High: " + curWeather.getMaxTemp() + "\u00B0 Low: " + curWeather.getMinTemp() + "\u00B0"};
                 //"Tomorrow: " + temp2High + "*/" + temp2Low + "*",
                 //"Thursday: " + temp3High + "*/" + temp3Low + "*" };
 
