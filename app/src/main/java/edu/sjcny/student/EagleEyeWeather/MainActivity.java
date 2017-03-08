@@ -3,8 +3,6 @@ package edu.sjcny.student.EagleEyeWeather;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,15 +19,9 @@ import com.friedrich.kaiser.weatherapp.R;
 
 import org.json.JSONException;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
 import edu.sjcny.student.EagleEyeWeather.json.JSONParser;
-import edu.sjcny.student.EagleEyeWeather.weather.CurrentWeather;
 import edu.sjcny.student.EagleEyeWeather.url.WeatherURLHandler;
-import edu.sjcny.student.EagleEyeWeather.weather.Weather;
-import edu.sjcny.student.EagleEyeWeather.weather.WeeklyWeather;
+import edu.sjcny.student.EagleEyeWeather.weather.WeatherObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -86,22 +78,26 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO Begin Async Call
         //TODO Use the Weather URL Handler in the Async Call to get JSON as String
-        String json = "";
+        String jsonNow = "";
+        String jsonAhead = "";
         try {
-            json = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener)locationListener).getLatitude(), ((MyLocationListener)locationListener).getLongitude(), "imperial"));
+            jsonNow = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener)locationListener).getLatitude(), ((MyLocationListener)locationListener).getLongitude(), "imperial"));
+            jsonAhead = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener)locationListener).getLatitude(), ((MyLocationListener)locationListener).getLongitude(), "imperial", 7));
         } catch (Exception e) {
             e.printStackTrace();
         }
         //TODO end Async Call
 
         //TODO parse JSON using JSONObject API into Weather Objects
-        CurrentWeather weather;
+        WeatherObject weather;
+        WeatherObject[] weekAhead;
         try {
-            weather = JSONParser.parseJSONWeather(json);
+            weather = JSONParser.parseJSONNow(jsonNow);
+            weekAhead = JSONParser.parseJSONWeekAhead(jsonAhead);
 
-            curTemp = weather.temp;
-            temp1Low = weather.tempMin;
-            temp1High = weather.tempMax;
+            curTemp = weather.getAvgTemp();
+            temp1Low = weather.getMinTemp();
+            temp1High = weather.getMaxTemp();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -161,8 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 //"Tomorrow: " + temp2High + "*/" + temp2Low + "*",
                 //"Thursday: " + temp3High + "*/" + temp3Low + "*" };
 
-        ArrayAdapter adapter = new ArrayAdapter<String>(
-                this, R.layout.activity_listview, weathers);
+        ArrayAdapter adapter = new ArrayAdapter<String>(                this, R.layout.activity_listview, weathers);
 
         ListView listView = (ListView) findViewById(R.id.temps_listview);
         listView.setAdapter(adapter);
