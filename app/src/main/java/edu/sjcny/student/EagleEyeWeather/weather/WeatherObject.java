@@ -20,10 +20,6 @@ public class WeatherObject {
 
     private double pressure = 0;
     private double humidity = 0;
-    //private String cloud;
-    //private String cloudtype;
-
-    //private double day;
 
     public double getMinTemp() {
         return minTemp;

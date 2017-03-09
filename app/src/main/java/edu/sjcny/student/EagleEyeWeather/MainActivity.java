@@ -19,15 +19,15 @@ import com.friedrich.kaiser.weatherapp.R;
 
 import org.json.JSONException;
 
+import java.util.concurrent.ExecutionException;
+
 import edu.sjcny.student.EagleEyeWeather.json.JSONParser;
 import edu.sjcny.student.EagleEyeWeather.url.WeatherURLHandler;
 import edu.sjcny.student.EagleEyeWeather.weather.WeatherObject;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO: move this to values/strings.xml
-    public static final String appKey="2499865a319393f1770ce3daa85674da";
-
+    public final String appKey = /*getString(R.string.api_key);*/ "2499865a319393f1770ce3daa85674da";
     public WeatherObject curWeather;
     public WeatherObject[] weekWeather;
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         //Location End
 
         //This is the workaround for not using an Async Call
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
 
 
         //TODO Initialize the GUI and Weather Objects (Current, WeekAhead[])
@@ -73,12 +73,30 @@ public class MainActivity extends AppCompatActivity {
         //TODO Use the Weather URL Handler in the Async Call to get JSON as String
         String jsonNow = "";
         String jsonAhead = "";
+
         try {
-            jsonNow = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial"));
-            jsonAhead = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial", 7));
-        } catch (Exception e) {
+            Log.d("THREAD","Start");
+            WeatherTask weather = new WeatherTask();
+            jsonNow = (weather.execute(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial"))).get();
+            weather.cancel(true);
+            weather = new WeatherTask();
+            jsonAhead = (weather.execute(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial", 7))).get();
+            weather.cancel(true);
+            Log.d("THREAD","End, Meme Achieved");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
+
+
+
+        /*try {
+            jsonNow = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial"));
+            jsonAhead = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial", 7));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
         //TODO end Async Call
 
         //TODO parse JSON using JSONObject API into Weather Objects
@@ -98,13 +116,11 @@ public class MainActivity extends AppCompatActivity {
         WeeklyWeather weeklyWeather = null;
         WeatherURLHandler weatherRetriever = new WeatherURLHandler(currentWeather, weeklyWeather);*/
 
-        //TODO: have this change based on if you're on current weather page or weekly forecast page
         populateWeatherFields();
     }
 
     /**
-     * TODO: have it request permissions if they are not granted
-     * @param requestCode
+     * @param requestCode used in the switch statement, should match with the permission you resuested
      * @param permissions
      * @param grantResults
      */
@@ -120,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     //permission not granted
+                    //kill yourself D:
                 }
                 break;
             case 321: //Coarse Location
@@ -130,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     //permission not granted
+                    //kill yourself D:
                 }
         }
     }
