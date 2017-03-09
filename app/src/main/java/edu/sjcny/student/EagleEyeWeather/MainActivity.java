@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 321);
         }
+        //TODO: check if location is on, and iff not, ask to turn on
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
         /**
          * this call ensures that onLocationChanged has been called at least once.
@@ -74,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
         String jsonNow = "";
         String jsonAhead = "";
 
+
+        //TODO: check if internet/data is on, and iff not, ask to turn on
         try {
             Log.d("THREAD","Start");
             WeatherTask weather = new WeatherTask();
