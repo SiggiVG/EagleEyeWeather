@@ -32,12 +32,17 @@ public class WeatherTask extends AsyncTask<String, String, String>
 
         try
         {
+            //This is a url
             URL url = new URL(params[0]);
+            //opens the door
             request = (HttpURLConnection) url.openConnection();
+            //walks in
             request.connect();
 
+            //get's the shit shit that's thrown at you
             InputStream stream = request.getInputStream();
 
+            //reader then poops the shit into a string
             reader = new BufferedReader(new InputStreamReader(stream));
 
             StringBuffer buffer = new StringBuffer();
@@ -45,6 +50,7 @@ public class WeatherTask extends AsyncTask<String, String, String>
 
             while ((line = reader.readLine()) != null)
             {
+                //removes all new lines???
                 buffer.append(line+"\n");
                 Log.d("Response: ", "> " + line);
             }
@@ -61,11 +67,11 @@ public class WeatherTask extends AsyncTask<String, String, String>
         }
         finally
         {
-            if(request != null)
+            if(request != null)//if got something, gtfo
                 request.disconnect();
             try
             {
-                if (reader != null)
+                if (reader != null)//close that shite
                     reader.close();
             }
             catch (IOException e)
@@ -79,6 +85,6 @@ public class WeatherTask extends AsyncTask<String, String, String>
     @Override
     protected void onPostExecute(String result)
     {
-
+        //aftercare
     }
 }

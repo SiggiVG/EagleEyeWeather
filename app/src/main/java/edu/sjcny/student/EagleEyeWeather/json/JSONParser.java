@@ -34,11 +34,11 @@ public class JSONParser
         curWeather.setPercipDesc(weath.getString("description"));
 
         JSONObject main = json.getJSONObject("main");
-        curWeather.setAvgTemp(main.getDouble("temp"));
-        curWeather.setHumidity(main.getDouble("humidity"));
-        curWeather.setPressure(main.getDouble("pressure"));
-        curWeather.setMinTemp(main.getDouble("temp_min"));
-        curWeather.setMaxTemp(main.getDouble("temp_max"));
+        curWeather.setAvgTemp(Math.round(main.getDouble("temp")));
+        curWeather.setHumidity(Math.round(main.getDouble("humidity")));
+        curWeather.setPressure(Math.round(main.getDouble("pressure")));
+        curWeather.setMinTemp(Math.round(main.getDouble("temp_min")));
+        curWeather.setMaxTemp(Math.round(main.getDouble("temp_max")));
 
         curWeather.setWindspeed(json.getJSONObject("wind").getDouble("speed"));
 
@@ -95,12 +95,12 @@ public class JSONParser
             weathers[i].setPercipDesc(weath.getString("description"));
 
             JSONObject temps = weatherJSON.getJSONObject("temp");
-            weathers[i].setAvgTemp(temps.getDouble("day"));
-            weathers[i].setMinTemp(temps.getDouble("min"));
-            weathers[i].setMaxTemp(temps.getDouble("max"));
-            weathers[i].setNightTemp(temps.getDouble("night"));
-            weathers[i].setEveTemp(temps.getDouble("eve"));
-            weathers[i].setMornTemp(temps.getDouble("morn"));
+            weathers[i].setAvgTemp(Math.round(temps.getDouble("day")));
+            weathers[i].setMinTemp(Math.round(temps.getDouble("min")));
+            weathers[i].setMaxTemp(Math.round(temps.getDouble("max")));
+            weathers[i].setNightTemp(Math.round(temps.getDouble("night")));
+            weathers[i].setEveTemp(Math.round(temps.getDouble("eve")));
+            weathers[i].setMornTemp(Math.round(temps.getDouble("morn")));
 
             weathers[i].setPressure(weatherJSON.getDouble("speed"));
             weathers[i].setHumidity(weatherJSON.getDouble("speed"));

@@ -2,23 +2,28 @@ package edu.sjcny.student.EagleEyeWeather;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.friedrich.kaiser.weatherapp.R;
 
 import org.json.JSONException;
 
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import edu.sjcny.student.EagleEyeWeather.json.JSONParser;
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         //TODO: check if location is on, and iff not, ask to turn on
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+
         /**
          * this call ensures that onLocationChanged has been called at least once.
          */
@@ -65,62 +71,9 @@ public class MainActivity extends AppCompatActivity {
         //This is the workaround for not using an Async Call
         //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
 
-
-        //TODO Initialize the GUI and Weather Objects (Current, WeekAhead[])
-
-        //TODO have the chrome(?) browser open at the touch of a button to the Weather Channel page???
-
-        //TODO maybe move Async Call to OnLocationChanged??? so that it updates in real time?
-        //TODO Begin Async Call
-        //TODO Use the Weather URL Handler in the Async Call to get JSON as String
-        String jsonNow = "";
-        String jsonAhead = "";
+        //TODO move everything to a method called in onLocationChanged???
 
 
-        //TODO: check if internet/data is on, and iff not, ask to turn on
-        try {
-            Log.d("THREAD","Start");
-            WeatherTask weather = new WeatherTask();
-            jsonNow = (weather.execute(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial"))).get();
-            weather.cancel(true);
-            weather = new WeatherTask();
-            jsonAhead = (weather.execute(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial", 7))).get();
-            weather.cancel(true);
-            Log.d("THREAD","End, Meme Achieved");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-
-
-        /*try {
-            jsonNow = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial"));
-            jsonAhead = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial", 7));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-        //TODO end Async Call
-
-        //TODO parse JSON using JSONObject API into Weather Objects
-        try {
-            curWeather = JSONParser.parseJSONNow(jsonNow);
-            weekWeather = JSONParser.parseJSONWeekAhead(jsonAhead);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        //TODO Update the GUI Fields with information taken from the Weather Objects
-
-
-
-
-        /*CurrentWeather currentWeather = null;
-        WeeklyWeather weeklyWeather = null;
-        WeatherURLHandler weatherRetriever = new WeatherURLHandler(currentWeather, weeklyWeather);*/
-
-        populateWeatherFields();
     }
 
     /**
@@ -156,22 +109,68 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * TODO replace this with a new populate method that takes in Weather objects
-     */
+    public void launchBrowser(View view)
+    {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.weather.com"));
+        startActivity(browserIntent);
+    }
+
     private void populateWeatherFields()
     {
-        String[] weathers = new String[] {
+        Calendar calendar = Calendar.getInstance();
+        String[] week = getWeeklist(calendar.get(Calendar.DAY_OF_WEEK));
+
+
+        char deg = (char) 0x00B0;//'\u0B00';//(char) 248;
+        ((TextView)findViewById(R.id.Today_temp)).setText("Today: " + curWeather.getMinTemp() + deg + "/" + curWeather.getMaxTemp() + deg);
+        ((TextView)findViewById(R.id.wind_spd)).setText("Windspeed: " + curWeather.getWindspeed());
+
+        ((TextView)findViewById(R.id.Tom_temp)).setText("Tomorrow: " + weekWeather[1].getMinTemp() + deg + "/" + weekWeather[1].getMaxTemp() + deg);
+        ((TextView)findViewById(R.id.day_3_temp)).setText(week[2] + ": " + weekWeather[2].getMinTemp() + deg + "/" + weekWeather[2].getMaxTemp() + deg);
+        ((TextView)findViewById(R.id.day_4_temp)).setText(week[3] + ": " + weekWeather[3].getMinTemp() + deg + "/" + weekWeather[3].getMaxTemp() + deg);
+        ((TextView)findViewById(R.id.day_5_temp)).setText(week[4] + ": " + weekWeather[4].getMinTemp() + deg + "/" + weekWeather[4].getMaxTemp() + deg);
+        ((TextView)findViewById(R.id.day_6_temp)).setText(week[5] + ": " + weekWeather[5].getMinTemp() + deg + "/" + weekWeather[5].getMaxTemp() + deg);
+        ((TextView)findViewById(R.id.day_7_temp)).setText(week[6] + ": " + weekWeather[6].getMinTemp() + deg + "/" + weekWeather[6].getMaxTemp() + deg);
+
+
+        /*String[] weathers = new String[] {
                 "Now: " + curWeather.getAvgTemp() + "\u00B0",
                 "Today's High: " + curWeather.getMaxTemp() + "\u00B0 Low: " + curWeather.getMinTemp() + "\u00B0"};
-                //"Tomorrow: " + temp2High + "*/" + temp2Low + "*",
-                //"Thursday: " + temp3High + "*/" + temp3Low + "*" };
+                //"Tomorrow: " + temp2High + "" + temp2Low + "*",
+                //"Thursday: " + temp3High + "" + temp3Low + "*" };
 
-        ArrayAdapter adapter = new ArrayAdapter<String>(                this, R.layout.activity_listview, weathers);
+        /*ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, weathers);
 
         ListView listView = (ListView) findViewById(R.id.temps_listview);
         listView.setAdapter(adapter);
-        listView.setDivider(null);
+        listView.setDivider(null);*/
+    }
+
+    /**
+     *
+     * @param startday Sunday is 1
+     * @return
+     */
+    private String[] getWeeklist(int startday)
+    {
+        --startday;
+        String[] weekdays = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+        String[] result = new String[7];
+
+        result[0] = weekdays[startday];
+        int j = 1;
+        while(j < result.length)
+        {
+            ++startday;
+            if(startday >= result.length)
+            {
+                startday = 0;
+            }
+            result[j] = weekdays[startday];
+            ++j;
+        }
+        return result;
     }
 
     /**
@@ -199,6 +198,62 @@ public class MainActivity extends AppCompatActivity {
             Log.d("LOC", longitude);
             latitude = Double.toString(loc.getLatitude());
             Log.d("LOC", latitude);
+
+            //TODO reget JSON through API and reParse them, repopulate fields.
+
+            //TODO Initialize the GUI and Weather Objects (Current, WeekAhead[])
+            curWeather = new WeatherObject();
+            weekWeather = new WeatherObject[7];
+
+            //TODO have the chrome(?) browser open at the touch of a button to the Weather Channel page???
+
+            //Begin Async Call
+            //Use the Weather URL Handler in the Async Call to get JSON as String
+            String jsonNow = "";
+            String jsonAhead = "";
+
+
+            //TODO: check if internet/data is on, and iff not, ask to turn on
+            try {
+                Log.d("THREAD","Start");
+                WeatherTask weather = new WeatherTask();
+                jsonNow = (weather.execute(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) this).getLatitude(), ((MyLocationListener) this).getLongitude(), "imperial"))).get();
+                weather.cancel(true);
+                weather = new WeatherTask();
+                jsonAhead = (weather.execute(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) this).getLatitude(), ((MyLocationListener) this).getLongitude(), "imperial", 7))).get();
+                weather.cancel(true);
+                Log.d("THREAD","End, Meme Achieved");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            //end Async Call
+
+        /*try {
+            jsonNow = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial"));
+            jsonAhead = WeatherURLHandler.readUrl(WeatherURLHandler.getWeatherAPICALL(appKey, ((MyLocationListener) locationListener).getLatitude(), ((MyLocationListener) locationListener).getLongitude(), "imperial", 7));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+            //parse JSON using JSONObject API into Weather Objects
+            try {
+                curWeather = JSONParser.parseJSONNow(jsonNow);
+                weekWeather = JSONParser.parseJSONWeekAhead(jsonAhead);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //TODO Update the GUI Fields with information taken from the Weather Objects
+
+
+
+
+        /*CurrentWeather currentWeather = null;
+        WeeklyWeather weeklyWeather = null;
+        WeatherURLHandler weatherRetriever = new WeatherURLHandler(currentWeather, weeklyWeather);*/
+
+            populateWeatherFields();
 
         /*------- To get city name from coordinates -------- */
             /*String cityName = null;
