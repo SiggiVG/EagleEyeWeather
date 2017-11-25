@@ -18,4 +18,8 @@ Friedrich S Kaiser (SiggiVG)
 
 I (SiggiVG) wrote the URL formator for the API Call, handled the JSON parsing, and the GPS data integration, as well as managed source control.
 
+# Known Issues
+Upon the first time it launches, it will say it has crashed upon trying to obtain gps permissions, even though it doesnt.
+
+# Installation
 To use, clone locally, import into android studio, and build the apk.
